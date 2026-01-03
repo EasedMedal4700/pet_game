@@ -5,16 +5,17 @@ import 'package:flame/collisions.dart';
 
 import '../../assets/sprites.dart';
 import '../../game/hamster_game.dart';
+import 'sword_slash.dart';
 import 'hamster_stats.dart';
 
 class Hamster extends RectangleComponent
     with CollisionCallbacks, HasGameReference<HamsterGame> {
   Hamster()
-      : super(
-          size: Vector2.all(48),
-          anchor: Anchor.center,
-          paint: Paint()..color = const Color(0xFFFFD180),
-        );
+    : super(
+        size: Vector2.all(48),
+        anchor: Anchor.center,
+        paint: Paint()..color = const Color(0xFFFFD180),
+      );
 
   final HamsterStats stats = HamsterStats();
   bool hasEnoughFood = false;
@@ -22,38 +23,220 @@ class Hamster extends RectangleComponent
   final Vector2 velocity = Vector2.zero();
   bool onGround = false;
 
+  int facing = 1;
+  double _attackCooldown = 0;
+
   // Cute hamster pixel sprite (16x12)
   static const PixelSprite _sprite = PixelSprite(
     width: 16,
     height: 12,
     pixels: [
       // Row 1
-      null, null, null, null, null, 0xFF6D4C41, null, null, null, null, 0xFF6D4C41, null, null, null, null, null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      0xFF6D4C41,
+      null,
+      null,
+      null,
+      null,
+      0xFF6D4C41,
+      null,
+      null,
+      null,
+      null,
+      null,
       // Row 2
-      null, null, null, 0xFF6D4C41, 0xFFFFD180, 0xFFFFD180, null, null, null, null, 0xFFFFD180, 0xFFFFD180, 0xFF6D4C41, null, null, null,
+      null,
+      null,
+      null,
+      0xFF6D4C41,
+      0xFFFFD180,
+      0xFFFFD180,
+      null,
+      null,
+      null,
+      null,
+      0xFFFFD180,
+      0xFFFFD180,
+      0xFF6D4C41,
+      null,
+      null,
+      null,
       // Row 3
-      null, null, 0xFF6D4C41, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFF000000, null, null, 0xFF000000, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFF6D4C41, null, null,
+      null,
+      null,
+      0xFF6D4C41,
+      0xFFFFD180,
+      0xFFFFD180,
+      0xFFFFD180,
+      0xFF000000,
+      null,
+      null,
+      0xFF000000,
+      0xFFFFD180,
+      0xFFFFD180,
+      0xFFFFD180,
+      0xFF6D4C41,
+      null,
+      null,
       // Row 4
-      null, 0xFF6D4C41, 0xFFFFD180, 0xFFFFD180, 0xFFFFE0B2, 0xFFFFE0B2, null, 0xFF000000, 0xFF000000, null, 0xFFFFE0B2, 0xFFFFE0B2, 0xFFFFD180, 0xFFFFD180, 0xFF6D4C41, null,
+      null,
+      0xFF6D4C41,
+      0xFFFFD180,
+      0xFFFFD180,
+      0xFFFFE0B2,
+      0xFFFFE0B2,
+      null,
+      0xFF000000,
+      0xFF000000,
+      null,
+      0xFFFFE0B2,
+      0xFFFFE0B2,
+      0xFFFFD180,
+      0xFFFFD180,
+      0xFF6D4C41,
+      null,
       // Row 5
-      null, 0xFF6D4C41, 0xFFFFD180, 0xFFFFE0B2, 0xFFFFE0B2, 0xFFFFE0B2, null, null, null, null, 0xFFFFE0B2, 0xFFFFE0B2, 0xFFFFE0B2, 0xFFFFD180, 0xFF6D4C41, null,
+      null,
+      0xFF6D4C41,
+      0xFFFFD180,
+      0xFFFFE0B2,
+      0xFFFFE0B2,
+      0xFFFFE0B2,
+      null,
+      null,
+      null,
+      null,
+      0xFFFFE0B2,
+      0xFFFFE0B2,
+      0xFFFFE0B2,
+      0xFFFFD180,
+      0xFF6D4C41,
+      null,
       // Row 6
-      null, 0xFF6D4C41, 0xFFFFD180, 0xFFFFD180, 0xFFFFE0B2, 0xFFFFE0B2, 0xFFFFC1A6, 0xFFFFC1A6, 0xFFFFC1A6, 0xFFFFC1A6, 0xFFFFE0B2, 0xFFFFE0B2, 0xFFFFD180, 0xFFFFD180, 0xFF6D4C41, null,
+      null,
+      0xFF6D4C41,
+      0xFFFFD180,
+      0xFFFFD180,
+      0xFFFFE0B2,
+      0xFFFFE0B2,
+      0xFFFFC1A6,
+      0xFFFFC1A6,
+      0xFFFFC1A6,
+      0xFFFFC1A6,
+      0xFFFFE0B2,
+      0xFFFFE0B2,
+      0xFFFFD180,
+      0xFFFFD180,
+      0xFF6D4C41,
+      null,
       // Row 7
-      null, null, 0xFF6D4C41, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFFFFE0B2, 0xFFFFE0B2, 0xFFFFE0B2, 0xFFFFE0B2, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFF6D4C41, null, null,
+      null,
+      null,
+      0xFF6D4C41,
+      0xFFFFD180,
+      0xFFFFD180,
+      0xFFFFD180,
+      0xFFFFE0B2,
+      0xFFFFE0B2,
+      0xFFFFE0B2,
+      0xFFFFE0B2,
+      0xFFFFD180,
+      0xFFFFD180,
+      0xFFFFD180,
+      0xFF6D4C41,
+      null,
+      null,
       // Row 8
-      null, null, null, 0xFF6D4C41, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFF6D4C41, null, null, null,
+      null,
+      null,
+      null,
+      0xFF6D4C41,
+      0xFFFFD180,
+      0xFFFFD180,
+      0xFFFFD180,
+      0xFFFFD180,
+      0xFFFFD180,
+      0xFFFFD180,
+      0xFFFFD180,
+      0xFFFFD180,
+      0xFF6D4C41,
+      null,
+      null,
+      null,
       // Row 9
-      null, null, null, null, 0xFF6D4C41, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFF6D4C41, null, null, null, null,
+      null,
+      null,
+      null,
+      null,
+      0xFF6D4C41,
+      0xFFFFD180,
+      0xFFFFD180,
+      0xFFFFD180,
+      0xFFFFD180,
+      0xFFFFD180,
+      0xFFFFD180,
+      0xFF6D4C41,
+      null,
+      null,
+      null,
+      null,
       // Row 10
-      null, null, null, null, null, 0xFF6D4C41, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFF6D4C41, null, null, null, null, null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      0xFF6D4C41,
+      0xFFFFD180,
+      0xFFFFD180,
+      0xFFFFD180,
+      0xFFFFD180,
+      0xFF6D4C41,
+      null,
+      null,
+      null,
+      null,
+      null,
       // Row 11
-      null, null, null, null, null, null, 0xFF6D4C41, 0xFF6D4C41, null, 0xFF6D4C41, 0xFF6D4C41, null, null, null, null, null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      0xFF6D4C41,
+      0xFF6D4C41,
+      null,
+      0xFF6D4C41,
+      0xFF6D4C41,
+      null,
+      null,
+      null,
+      null,
+      null,
       // Row 12
-      null, null, null, null, null, null, null, 0xFF000000, null, 0xFF000000, null, null, null, null, null, null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      0xFF000000,
+      null,
+      0xFF000000,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
     ],
   );
-
 
   @override
   Future<void> onLoad() async {
@@ -66,6 +249,12 @@ class Hamster extends RectangleComponent
   void render(Canvas canvas) {
     final rect = Rect.fromLTWH(0, 0, size.x, size.y);
     _sprite.render(canvas, rect);
+  }
+
+  @override
+  void update(double dt) {
+    super.update(dt);
+    if (_attackCooldown > 0) _attackCooldown -= dt;
   }
 
   void resetForNewRun() {
@@ -90,5 +279,14 @@ class Hamster extends RectangleComponent
   void bounceFromStomp() {
     velocity.y = -stats.jumpSpeed * 0.55;
     onGround = false;
+  }
+
+  void trySwordAttack() {
+    if (_attackCooldown > 0) return;
+
+    // Put the slash into the world so it can hit enemies.
+    game.cageWorld.add(SwordSlash(owner: this, facing: facing));
+
+    _attackCooldown = 0.28;
   }
 }

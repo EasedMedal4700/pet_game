@@ -14,11 +14,14 @@ class MadScientist extends PositionComponent
     required Vector2 position,
     required this.patrolA,
     required this.patrolB,
+    double? speed,
   }) : super(
           position: position,
           size: Vector2.all(32),
           anchor: Anchor.center,
-        );
+        ) {
+    if (speed != null) this.speed = speed;
+  }
 
   final double patrolA;
   final double patrolB;
@@ -52,6 +55,8 @@ class MadScientist extends PositionComponent
   @override
   Future<void> onLoad() async {
     await super.onLoad();
+    // Enemies should match the hamster's size.
+    size = game.hamster.size.clone();
     add(RectangleHitbox());
   }
 

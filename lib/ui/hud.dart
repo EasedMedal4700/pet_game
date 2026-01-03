@@ -47,11 +47,14 @@ class HUD extends StatelessWidget {
                   ),
                 ),
                 OutlinedButton(
-                  onPressed:
-                      game.state == GameState.playing ? game.pauseGame : null,
+                  onPressed: game.state == GameState.playing
+                      ? game.pauseGame
+                      : null,
                   child: const Text('Pause (Esc)'),
                 ),
-                const Text('A/D move, Space jump, Shift sprint, stomp enemies'),
+                const Text(
+                  'A/D move, Space jump, Shift sprint, stomp enemies, K sword (Chapter 2)',
+                ),
               ],
             ),
           ),

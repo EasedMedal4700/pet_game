@@ -45,7 +45,7 @@ class GameOverMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     final title = game.state == GameState.won ? 'You Escaped!' : 'Caught!';
     final subtitle = game.state == GameState.won
-        ? 'Great job. You gathered enough food.'
+      ? 'Great job. You gathered enough food.'
         : 'Try again and avoid traps.';
 
     return Center(

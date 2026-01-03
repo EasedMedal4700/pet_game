@@ -1,46 +1,50 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter_test/flutter_test.dart';
-
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:my_pet_game/game/hamster_game.dart';
 import 'package:my_pet_game/ui/hud.dart';
 import 'package:my_pet_game/ui/pause_menu.dart';
+import 'package:my_pet_game/ui/story_overlay.dart';
+import 'package:my_pet_game/world/levels.dart';
 
 void main() {
-  testWidgets('Game widget builds', (WidgetTester tester) async {
+  testWidgets('All 20 levels load without crashing', (tester) async {
     SharedPreferences.setMockInitialValues({});
+    final game = HamsterGame();
 
     await tester.pumpWidget(
       MaterialApp(
         home: GameWidget(
-          game: HamsterGame(),
+          game: game,
           overlayBuilderMap: {
             HUD.overlayKey: (context, game) => HUD(game: game as HamsterGame),
             PauseMenu.overlayKey: (context, game) =>
                 PauseMenu(game: game as HamsterGame),
             GameOverMenu.overlayKey: (context, game) =>
                 GameOverMenu(game: game as HamsterGame),
+            StoryOverlay.overlayKey: (context, game) =>
+                StoryOverlay(game: game as HamsterGame),
           },
           initialActiveOverlays: const [HUD.overlayKey],
         ),
       ),
     );
 
-    // Flame's GameWidget continuously schedules frames, so pumpAndSettle
-    // will time out. A couple of timed pumps is enough for overlays.
+    // Let the game mount and run onLoad.
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 200));
+    await tester.pump(const Duration(milliseconds: 100));
 
-    expect(find.textContaining('Food:'), findsOneWidget);
-    expect(find.textContaining('Space'), findsOneWidget);
+    expect(levels.length, 20);
+
+    // Smoke-load each definition into the same world.
+    for (var i = 0; i < levels.length; i++) {
+      await game.cageWorld.load(levels[i], keep: game.hamster);
+      await tester.pump();
+
+      expect(game.cageWorld.definition.index, i + 1);
+      expect(game.cageWorld.goal.parent, isNotNull);
+    }
   });
 }

@@ -26,10 +26,16 @@ class MovementSystem extends Component {
     // Horizontal movement.
     final isMoving = controls.horizontal.abs() > 0;
     final canSprint = hamster.game.stamina.value > 0;
-    final sprintMultiplier =
-        (controls.sprint && canSprint) ? hamster.stats.sprintMultiplier : 1.0;
+    final sprintMultiplier = (controls.sprint && canSprint)
+        ? hamster.stats.sprintMultiplier
+        : 1.0;
     hamster.velocity.x =
         controls.horizontal * hamster.stats.speed * sprintMultiplier;
+
+    if (controls.horizontal.abs() > 0) {
+      hamster.facing = controls.horizontal.sign.toInt();
+      if (hamster.facing == 0) hamster.facing = 1;
+    }
 
     // Jump (edge-triggered).
     if (controls.jumpPressed && hamster.onGround) {
@@ -83,10 +89,11 @@ class MovementSystem extends Component {
     final currTop = hamster.position.y - halfH;
     final currBottom = hamster.position.y + halfH;
 
-    final intersects = !(currRight <= platformLeft ||
-        currLeft >= platformRight ||
-        currBottom <= platformTop ||
-        currTop >= platformBottom);
+    final intersects =
+        !(currRight <= platformLeft ||
+            currLeft >= platformRight ||
+            currBottom <= platformTop ||
+            currTop >= platformBottom);
     if (!intersects) return;
 
     final prevLeft = _prevPos.x - halfW;
@@ -94,7 +101,8 @@ class MovementSystem extends Component {
     final prevTop = _prevPos.y - halfH;
     final prevBottom = _prevPos.y + halfH;
 
-    final fellOntoPlatform = hamster.velocity.y >= 0 && prevBottom <= platformTop;
+    final fellOntoPlatform =
+        hamster.velocity.y >= 0 && prevBottom <= platformTop;
     if (fellOntoPlatform) {
       hamster.position.y = platformTop - halfH;
       hamster.velocity.y = 0;

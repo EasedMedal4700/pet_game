@@ -10,13 +10,20 @@ import '../hamster/hamster.dart';
 
 class Cat extends RectangleComponent
     with CollisionCallbacks, HasGameReference<HamsterGame> {
-  Cat({required Vector2 position, required this.patrolA, required this.patrolB})
+  Cat({
+    required Vector2 position,
+    required this.patrolA,
+    required this.patrolB,
+    double? speed,
+  })
       : super(
           position: position,
           size: Vector2(64, 40),
           anchor: Anchor.center,
           paint: Paint()..color = const Color(0x00000000),
-        );
+        ) {
+    if (speed != null) this.speed = speed;
+  }
 
   final Vector2 patrolA;
   final Vector2 patrolB;
@@ -44,6 +51,8 @@ class Cat extends RectangleComponent
   @override
   Future<void> onLoad() async {
     await super.onLoad();
+    // Enemies should match the hamster's size.
+    size = game.hamster.size.clone();
     add(RectangleHitbox());
   }
 

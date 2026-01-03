@@ -23,18 +23,22 @@ class KeyboardControls {
 
     horizontal = dx.clamp(-1, 1);
 
-    final jumpDown = keysPressed.contains(LogicalKeyboardKey.space) ||
+    final jumpDown =
+        keysPressed.contains(LogicalKeyboardKey.space) ||
         keysPressed.contains(LogicalKeyboardKey.keyW) ||
         keysPressed.contains(LogicalKeyboardKey.arrowUp);
     jumpPressed = jumpDown && !_jumpWasDown;
     _jumpWasDown = jumpDown;
 
-    final attackDown = keysPressed.contains(LogicalKeyboardKey.controlLeft) ||
+    final attackDown =
+        keysPressed.contains(LogicalKeyboardKey.keyK) ||
+        keysPressed.contains(LogicalKeyboardKey.controlLeft) ||
         keysPressed.contains(LogicalKeyboardKey.controlRight);
     attackPressed = attackDown && !_attackWasDown;
     _attackWasDown = attackDown;
 
-    sprint = keysPressed.contains(LogicalKeyboardKey.shiftLeft) ||
+    sprint =
+        keysPressed.contains(LogicalKeyboardKey.shiftLeft) ||
         keysPressed.contains(LogicalKeyboardKey.shiftRight);
   }
 }

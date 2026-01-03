@@ -8,7 +8,7 @@ import '../entities/enemies/mad_scientist.dart';
 import '../entities/food/food.dart';
 import 'platform.dart';
 
-class CageWorld extends World {
+class CageWorldLevelTwo extends World {
   // Level bounds
   final Rect _bounds = const Rect.fromLTWH(0, 0, 3200, 720);
   Rect get bounds => _bounds;
@@ -59,11 +59,11 @@ class CageWorld extends World {
     _addPlatform(Vector2(2350, 370), Vector2(120, 28));
 
     // ─────────────────── Food (used as guidance) ───────────────────
-    add(Food(position: Vector2(340, 500)));     // early reward
-    add(Food(position: Vector2(780, 260)));     // risky jump
-    add(Food(position: Vector2(1040, 220)));    // upper path
-    add(Food(position: Vector2(1600, 300)));    // reward for climbing
-    add(Food(position: Vector2(2350, 330)));    // after set-piece
+    add(Food(position: Vector2(340, 500))); // early reward
+    add(Food(position: Vector2(780, 260))); // risky jump
+    add(Food(position: Vector2(1040, 220))); // upper path
+    add(Food(position: Vector2(1600, 300))); // reward for climbing
+    add(Food(position: Vector2(2350, 330))); // after set-piece
 
     // ─────────────────── Enemies (intentional placement) ───────────────────
     add(
