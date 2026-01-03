@@ -11,7 +11,7 @@ class Hamster extends RectangleComponent
     with CollisionCallbacks, HasGameReference<HamsterGame> {
   Hamster()
       : super(
-          size: Vector2.all(32),
+          size: Vector2.all(48),
           anchor: Anchor.center,
           paint: Paint()..color = const Color(0xFFFFD180),
         );
@@ -22,25 +22,38 @@ class Hamster extends RectangleComponent
   final Vector2 velocity = Vector2.zero();
   bool onGround = false;
 
-  // A tiny pixel sprite (16x12) that looks hamster-ish.
+  // Cute hamster pixel sprite (16x12)
   static const PixelSprite _sprite = PixelSprite(
     width: 16,
     height: 12,
     pixels: [
-      null, null, null, null, null, null, null, 0xFF000000, 0xFF000000, null, null, null, null, null, null, null,
-      null, null, null, null, null, 0xFF6D4C41, 0xFF6D4C41, 0xFFFFE0B2, 0xFFFFE0B2, 0xFF6D4C41, 0xFF6D4C41, null, null, null, null, null,
-      null, null, null, 0xFF6D4C41, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFFFFE0B2, 0xFFFFE0B2, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFF6D4C41, null, null, null,
-      null, null, 0xFF6D4C41, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFFFFE0B2, 0xFFFFE0B2, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFF6D4C41, null, null,
-      null, 0xFF6D4C41, 0xFFFFD180, 0xFFFFD180, 0xFF000000, 0xFFFFD180, 0xFFFFD180, 0xFFFFE0B2, 0xFFFFE0B2, 0xFFFFD180, 0xFFFFD180, 0xFF000000, 0xFFFFD180, 0xFFFFD180, 0xFF6D4C41, null,
-      null, 0xFF6D4C41, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFFFFC1A6, 0xFFFFC1A6, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFF6D4C41, null,
-      null, null, 0xFF6D4C41, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFFFFC1A6, 0xFFFFC1A6, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFF6D4C41, null, null,
+      // Row 1
+      null, null, null, null, null, 0xFF6D4C41, null, null, null, null, 0xFF6D4C41, null, null, null, null, null,
+      // Row 2
+      null, null, null, 0xFF6D4C41, 0xFFFFD180, 0xFFFFD180, null, null, null, null, 0xFFFFD180, 0xFFFFD180, 0xFF6D4C41, null, null, null,
+      // Row 3
+      null, null, 0xFF6D4C41, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFF000000, null, null, 0xFF000000, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFF6D4C41, null, null,
+      // Row 4
+      null, 0xFF6D4C41, 0xFFFFD180, 0xFFFFD180, 0xFFFFE0B2, 0xFFFFE0B2, null, 0xFF000000, 0xFF000000, null, 0xFFFFE0B2, 0xFFFFE0B2, 0xFFFFD180, 0xFFFFD180, 0xFF6D4C41, null,
+      // Row 5
+      null, 0xFF6D4C41, 0xFFFFD180, 0xFFFFE0B2, 0xFFFFE0B2, 0xFFFFE0B2, null, null, null, null, 0xFFFFE0B2, 0xFFFFE0B2, 0xFFFFE0B2, 0xFFFFD180, 0xFF6D4C41, null,
+      // Row 6
+      null, 0xFF6D4C41, 0xFFFFD180, 0xFFFFD180, 0xFFFFE0B2, 0xFFFFE0B2, 0xFFFFC1A6, 0xFFFFC1A6, 0xFFFFC1A6, 0xFFFFC1A6, 0xFFFFE0B2, 0xFFFFE0B2, 0xFFFFD180, 0xFFFFD180, 0xFF6D4C41, null,
+      // Row 7
+      null, null, 0xFF6D4C41, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFFFFE0B2, 0xFFFFE0B2, 0xFFFFE0B2, 0xFFFFE0B2, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFF6D4C41, null, null,
+      // Row 8
       null, null, null, 0xFF6D4C41, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFF6D4C41, null, null, null,
+      // Row 9
       null, null, null, null, 0xFF6D4C41, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFF6D4C41, null, null, null, null,
+      // Row 10
       null, null, null, null, null, 0xFF6D4C41, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFFFFD180, 0xFF6D4C41, null, null, null, null, null,
-      null, null, null, null, null, null, 0xFF6D4C41, 0xFF6D4C41, 0xFF6D4C41, 0xFF6D4C41, null, null, null, null, null, null,
-      null, null, null, null, null, null, null, 0xFF000000, 0xFF000000, null, null, null, null, null, null, null,
+      // Row 11
+      null, null, null, null, null, null, 0xFF6D4C41, 0xFF6D4C41, null, 0xFF6D4C41, 0xFF6D4C41, null, null, null, null, null,
+      // Row 12
+      null, null, null, null, null, null, null, 0xFF000000, null, 0xFF000000, null, null, null, null, null, null,
     ],
   );
+
 
   @override
   Future<void> onLoad() async {
