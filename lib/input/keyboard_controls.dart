@@ -1,13 +1,16 @@
-import 'package:flame/components.dart';
 import 'package:flutter/services.dart';
 
 class KeyboardControls {
-  Vector2 direction = Vector2.zero();
+  double horizontal = 0;
+  bool jumpPressed = false;
+  bool attackPressed = false;
   bool sprint = false;
+
+  bool _jumpWasDown = false;
+  bool _attackWasDown = false;
 
   void update(Set<LogicalKeyboardKey> keysPressed) {
     double dx = 0;
-    double dy = 0;
 
     if (keysPressed.contains(LogicalKeyboardKey.keyA) ||
         keysPressed.contains(LogicalKeyboardKey.arrowLeft)) {
@@ -17,19 +20,19 @@ class KeyboardControls {
         keysPressed.contains(LogicalKeyboardKey.arrowRight)) {
       dx += 1;
     }
-    if (keysPressed.contains(LogicalKeyboardKey.keyW) ||
-        keysPressed.contains(LogicalKeyboardKey.arrowUp)) {
-      dy -= 1;
-    }
-    if (keysPressed.contains(LogicalKeyboardKey.keyS) ||
-        keysPressed.contains(LogicalKeyboardKey.arrowDown)) {
-      dy += 1;
-    }
 
-    direction = Vector2(dx, dy);
-    if (direction.length2 > 1) {
-      direction.normalize();
-    }
+    horizontal = dx.clamp(-1, 1);
+
+    final jumpDown = keysPressed.contains(LogicalKeyboardKey.space) ||
+        keysPressed.contains(LogicalKeyboardKey.keyW) ||
+        keysPressed.contains(LogicalKeyboardKey.arrowUp);
+    jumpPressed = jumpDown && !_jumpWasDown;
+    _jumpWasDown = jumpDown;
+
+    final attackDown = keysPressed.contains(LogicalKeyboardKey.controlLeft) ||
+        keysPressed.contains(LogicalKeyboardKey.controlRight);
+    attackPressed = attackDown && !_attackWasDown;
+    _attackWasDown = attackDown;
 
     sprint = keysPressed.contains(LogicalKeyboardKey.shiftLeft) ||
         keysPressed.contains(LogicalKeyboardKey.shiftRight);

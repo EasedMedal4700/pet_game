@@ -59,6 +59,7 @@ class HamsterGame extends FlameGame
   }
 
   void collectFood(int amount) {
+    if (state != GameState.playing) return;
     foodCollected.value += amount;
     stamina.value = (stamina.value + 20).clamp(0, 100);
 
@@ -67,11 +68,13 @@ class HamsterGame extends FlameGame
   }
 
   void hitTrap() {
+    if (state != GameState.playing) return;
     state = GameState.lost;
     overlays.add('GameOver');
   }
 
   void reachExit() {
+    if (state != GameState.playing) return;
     if (!hamster.hasEnoughFood) return;
     state = GameState.won;
     overlays.add('GameOver');

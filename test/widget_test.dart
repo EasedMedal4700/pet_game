@@ -38,6 +38,6 @@ void main() {
     await tester.pump(const Duration(milliseconds: 200));
 
     expect(find.textContaining('Food:'), findsOneWidget);
-    expect(find.textContaining('WASD'), findsOneWidget);
+    expect(find.textContaining('Space'), findsOneWidget);
   });
 }

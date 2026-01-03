@@ -3,17 +3,23 @@ import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:flame/collisions.dart';
 
+import '../entities/enemies/child_enemy.dart';
+import '../entities/enemies/mad_scientist.dart';
 import '../entities/food/food.dart';
-import '../entities/hazards/trap.dart';
+import 'platform.dart';
 
 class CageWorld extends Component {
-  // A simple rectangular level.
-  final Rect _bounds = const Rect.fromLTWH(0, 0, 1400, 900);
+  // A simple side-scrolling level.
+  final Rect _bounds = const Rect.fromLTWH(0, 0, 3200, 720);
 
   Rect get bounds => _bounds;
 
+  Vector2 get spawnPoint => Vector2(120, 640 - 16);
+
+  final List<Platform> platforms = [];
+
   late final RectangleComponent _background;
-  late final RectangleComponent _exit;
+  late final RectangleComponent _goal;
 
   @override
   Future<void> onLoad() async {
@@ -27,37 +33,83 @@ class CageWorld extends Component {
 
     add(_background);
 
-    // Exit zone (top-right). The hamster must have enough food to win.
-    _exit = RectangleComponent(
-      position: Vector2(_bounds.right - 120, _bounds.top + 20),
-      size: Vector2(100, 60),
+    // Ground.
+    _addPlatform(Vector2(0, 640), Vector2(_bounds.width, 80));
+
+    // Platforms.
+    _addPlatform(Vector2(260, 540), Vector2(220, 32));
+    _addPlatform(Vector2(560, 460), Vector2(220, 32));
+    _addPlatform(Vector2(900, 520), Vector2(260, 32));
+    _addPlatform(Vector2(1280, 420), Vector2(220, 32));
+    _addPlatform(Vector2(1600, 500), Vector2(260, 32));
+    _addPlatform(Vector2(1960, 440), Vector2(260, 32));
+    _addPlatform(Vector2(2320, 380), Vector2(260, 32));
+    _addPlatform(Vector2(2680, 520), Vector2(360, 32));
+
+    // Food pickups (collect 5 to open the goal).
+    add(Food(position: Vector2(320, 500)));
+    add(Food(position: Vector2(620, 420)));
+    add(Food(position: Vector2(980, 480)));
+    add(Food(position: Vector2(1360, 380)));
+    add(Food(position: Vector2(2040, 400)));
+
+    // Enemies.
+    add(
+      MadScientist(
+        position: Vector2(980, 640 - 16),
+        patrolA: 820,
+        patrolB: 1140,
+      ),
+    );
+    add(
+      ChildEnemy(
+        position: Vector2(1700, 500 - 16),
+        patrolA: 1600,
+        patrolB: 1860,
+      ),
+    );
+
+    // Goal zone at the end.
+    _goal = RectangleComponent(
+      position: Vector2(_bounds.right - 120, 640 - 120),
+      size: Vector2(80, 120),
       paint: Paint()..color = const Color(0xFF2ECC71),
-    )
-      ..add(RectangleHitbox());
-    add(_exit);
-
-    // Food placements.
-    add(Food(position: Vector2(200, 200)));
-    add(Food(position: Vector2(600, 240)));
-    add(Food(position: Vector2(350, 650)));
-    add(Food(position: Vector2(1000, 700)));
-    add(Food(position: Vector2(1200, 360)));
-
-    // A couple traps.
-    add(Trap(position: Vector2(500, 430), size: Vector2(80, 40)));
-    add(Trap(position: Vector2(900, 520), size: Vector2(60, 60)));
+    )..add(RectangleHitbox());
+    add(_goal);
   }
 
-  RectangleComponent get exit => _exit;
+  RectangleComponent get goal => _goal;
 
   void resetLevel() {
-    // For MVP, just re-add food that might have been collected.
-    // Easiest: remove all Food components and recreate them.
     children.whereType<Food>().toList().forEach((c) => c.removeFromParent());
-    add(Food(position: Vector2(200, 200)));
-    add(Food(position: Vector2(600, 240)));
-    add(Food(position: Vector2(350, 650)));
-    add(Food(position: Vector2(1000, 700)));
-    add(Food(position: Vector2(1200, 360)));
+    add(Food(position: Vector2(320, 500)));
+    add(Food(position: Vector2(620, 420)));
+    add(Food(position: Vector2(980, 480)));
+    add(Food(position: Vector2(1360, 380)));
+    add(Food(position: Vector2(2040, 400)));
+
+    children.whereType<MadScientist>().toList().forEach((c) => c.removeFromParent());
+    add(
+      MadScientist(
+        position: Vector2(980, 640 - 16),
+        patrolA: 820,
+        patrolB: 1140,
+      ),
+    );
+
+    children.whereType<ChildEnemy>().toList().forEach((c) => c.removeFromParent());
+    add(
+      ChildEnemy(
+        position: Vector2(1700, 500 - 16),
+        patrolA: 1600,
+        patrolB: 1860,
+      ),
+    );
+  }
+
+  void _addPlatform(Vector2 position, Vector2 size) {
+    final p = Platform(position: position, size: size);
+    platforms.add(p);
+    add(p);
   }
 }

@@ -1,11 +1,14 @@
-# my_pet_game (Hamster Care)
+# my_pet_game (Hamster Escape)
 
-A tiny Flutter + Flame game where you take care of a pet hamster by managing three stats:
-- Hunger
-- Energy
-- Happiness
+A tiny Flutter + Flame top-down hamster game.
 
-Stats decay every second. Use the buttons to **Feed / Play / Sleep**, and **tap the hamster** to pet it.
+## MVP loop
+
+- Move with **WASD** (or arrow keys)
+- **Shift** to sprint (uses stamina)
+- Collect **food** (goal: 5)
+- Avoid **traps**
+- Reach the **exit** (only works once you have enough food)
 
 ## Run
 
@@ -24,6 +27,8 @@ flutter run -d chrome
 ## Project layout
 
 The game code lives under `lib/`:
-- `lib/game/` core game loop + stats
-- `lib/entities/` game entities (hamster)
-- `lib/ui/` Flutter overlays (HUD, pause, game over)
+- `lib/game/` core game loop/state
+- `lib/world/` level layout + bounds
+- `lib/entities/` hamster/food/hazards
+- `lib/systems/` movement + stamina
+- `lib/ui/` Flutter overlays (HUD, pause, win/lose)

@@ -51,7 +51,7 @@ class HUD extends StatelessWidget {
                       game.state == GameState.playing ? game.pauseGame : null,
                   child: const Text('Pause (Esc)'),
                 ),
-                const Text('WASD to move, Shift to sprint'),
+                const Text('A/D move, Space jump, Shift sprint, stomp enemies'),
               ],
             ),
           ),

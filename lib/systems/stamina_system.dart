@@ -23,7 +23,7 @@ class StaminaSystem extends Component with HasGameReference<HamsterGame> {
 
     if (game.state != GameState.playing) return;
 
-    final isMoving = controls.direction.length2 > 0;
+    final isMoving = controls.horizontal.abs() > 0;
     final isSprinting = controls.sprint && isMoving;
 
     if (isSprinting) {
