@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 
@@ -20,16 +22,20 @@ class SwordSlash extends PositionComponent
     : super(
         size: Vector2(owner.size.x * 0.9, owner.size.y * 0.6),
         anchor: Anchor.center,
+        priority: 50,
       );
 
   final Hamster owner;
   final int facing;
 
-  double _life = 0.12;
+  static const double _maxLife = 0.12;
+  double _life = _maxLife;
 
   @override
   Future<void> onLoad() async {
     await super.onLoad();
+    // Start in the correct place immediately (not after the first update).
+    position = owner.position + Vector2(facing * owner.size.x * 0.65, 0);
     add(RectangleHitbox(collisionType: CollisionType.active));
   }
 
@@ -44,6 +50,51 @@ class SwordSlash extends PositionComponent
     if (_life <= 0) {
       removeFromParent();
     }
+  }
+
+  @override
+  void render(Canvas canvas) {
+    final t = (_life / _maxLife).clamp(0.0, 1.0);
+    final alpha = (t * 220).toInt().clamp(0, 220);
+
+    // A simple slash "arc" made from two triangles.
+    final paint = Paint()
+      ..color = Color.fromARGB(alpha, 255, 255, 255)
+      ..style = PaintingStyle.fill;
+
+    final w = size.x;
+    final h = size.y;
+
+    // Directional geometry.
+    final dir = facing >= 0 ? 1.0 : -1.0;
+    final p1 = Offset(w * 0.15, h * 0.15);
+    final p2 = Offset(w * 0.95, h * 0.45);
+    final p3 = Offset(w * 0.15, h * 0.85);
+
+    canvas.save();
+    if (dir < 0) {
+      canvas.translate(w, 0);
+      canvas.scale(-1, 1);
+    }
+
+    final path = Path()
+      ..moveTo(p1.dx, p1.dy)
+      ..lineTo(p2.dx, p2.dy)
+      ..lineTo(p3.dx, p3.dy)
+      ..close();
+    canvas.drawPath(path, paint);
+
+    // Thin bright line for a bit of punch.
+    final linePaint = Paint()
+      ..color = Color.fromARGB((alpha + 35).clamp(0, 255), 255, 255, 255)
+      ..strokeWidth = 2;
+    canvas.drawLine(
+      Offset(w * 0.2, h * 0.2),
+      Offset(w * 0.9, h * 0.5),
+      linePaint,
+    );
+
+    canvas.restore();
   }
 
   @override

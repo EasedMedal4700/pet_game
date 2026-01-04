@@ -56,6 +56,59 @@ class CageWorld extends World {
     await load(definition, keep: keep);
   }
 
+  /// Applies sword damage immediately using a simple rectangle check.
+  ///
+  /// This makes the sword feel responsive even if collision timing is tight,
+  /// while the `SwordSlash` hitbox still exists for "physical" interactions.
+  void applySwordAttack({
+    required Vector2 ownerPosition,
+    required Vector2 ownerSize,
+    required int facing,
+  }) {
+    final center = ownerPosition + Vector2(facing * ownerSize.x * 0.65, 0);
+    final attackSize = Vector2(ownerSize.x * 0.9, ownerSize.y * 0.6);
+    final attackRect = Rect.fromCenter(
+      center: Offset(center.x, center.y),
+      width: attackSize.x,
+      height: attackSize.y,
+    );
+
+    for (final child in children.toList()) {
+      if (child is! PositionComponent) continue;
+
+      if (child is TwinBrotherBoss) {
+        final r = Rect.fromCenter(
+          center: Offset(child.position.x, child.position.y),
+          width: child.size.x,
+          height: child.size.y,
+        );
+        if (attackRect.overlaps(r)) {
+          child.takeSwordHit();
+        }
+        continue;
+      }
+
+      if (child is MadScientist ||
+          child is ChildEnemy ||
+          child is NetKid ||
+          child is RollingBot ||
+          child is Slime ||
+          child is LabDrone ||
+          child is VacuumBot ||
+          child is Cat ||
+          child is LaserTurret) {
+        final r = Rect.fromCenter(
+          center: Offset(child.position.x, child.position.y),
+          width: child.size.x,
+          height: child.size.y,
+        );
+        if (attackRect.overlaps(r)) {
+          child.removeFromParent();
+        }
+      }
+    }
+  }
+
   Future<void> _buildLevel() async {
     // Background
     _background?.removeFromParent();

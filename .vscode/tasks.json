@@ -122,6 +122,36 @@
 				"test"
 			],
 			"isBackground": false
+		},
+		{
+			"label": "flutter test",
+			"type": "shell",
+			"command": "flutter",
+			"args": [
+				"test"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "flutter test sword_attack expanded",
+			"type": "shell",
+			"command": "flutter",
+			"args": [
+				"test",
+				"test/sword_attack_test.dart",
+				"-r",
+				"expanded"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "flutter test",
+			"type": "shell",
+			"command": "flutter",
+			"args": [
+				"test"
+			],
+			"isBackground": false
 		}
 	]
 }

@@ -287,6 +287,14 @@ class Hamster extends RectangleComponent
     // Put the slash into the world so it can hit enemies.
     game.cageWorld.add(SwordSlash(owner: this, facing: facing));
 
+    // Also apply immediate range damage (more reliable than waiting on
+    // collision timing for a very short-lived hitbox).
+    game.cageWorld.applySwordAttack(
+      ownerPosition: position,
+      ownerSize: size,
+      facing: facing,
+    );
+
     _attackCooldown = 0.28;
   }
 }
